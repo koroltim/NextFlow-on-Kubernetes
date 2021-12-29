@@ -17,7 +17,7 @@ After you've cloned the repository,you should cd to the directory where you've i
 
     cd .nextflow/assets/nextflow-io/patterns
     
-At last you should copy the nextflow.config from the project's files to the directory.
+At last you should copy the nextflow.config from the project's files to the directory and don't forget to change the namespace value in k8s section to represent your namespace which is usually in format surname-ns.
 
 ## Run the example you want
 
