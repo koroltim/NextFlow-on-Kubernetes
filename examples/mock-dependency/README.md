@@ -17,35 +17,39 @@ its execution when the other process completes.
 
 ## Code 
 
-Channel
-    .fromPath('.data/reads/*.fq.gz')
-    .set{ reads_ch }
+    Channel
+        .fromPath('.data/reads/*.fq.gz')
+        .set{ reads_ch }
 
-process foo {
-    output: 
-    val true into done_ch
+    process foo {
+        output: 
+        val true into done_ch
 
-    script:
-    """
-    your_command_here
-    """
-}
+        script:
+        """
+        your_command_here
+        """
+    }
 
-process bar {
-    input: 
-    val flag from done_ch
-    file fq from reads_ch
+    process bar {
+        input: 
+        val flag from done_ch
+        file fq from reads_ch
 
-    script:
-    """
-    other_commad_here --reads $fq
-    """
-}
+        script:
+        """
+        other_commad_here --reads $fq
+        """
+    }
 
 
 ## Run it
 
-Run the example using this command:
+First you should follow the instructions mentioned in examples folder of this git repo.
 
+After that you can use the the following command to execute the example:
 
-        nextflow run patterns/mock-dependency.nf
+    nextflow kuberun nextflow run patterns/mock-dependency.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
