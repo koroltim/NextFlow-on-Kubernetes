@@ -15,26 +15,31 @@ Splitter for specific file formats are available, eg https://www.nextflow.io/doc
 
 ## Code 
 
-Channel
-    .fromPath('poem.txt')
-    .splitText(by: 5)
-    .set{ chunks_ch }
+    Channel
+        .fromPath('poem.txt')
+        .splitText(by: 5)
+        .set{ chunks_ch }
 
-process foo {
-  echo true
-  input: 
-  file x from chunks_ch
+    process foo {
+      echo true
+      input: 
+      file x from chunks_ch
 
-  script:
-  """
-  rev $x | rev
-  """
-} 
+      script:
+      """
+      rev $x | rev
+      """
+    } 
 
 
 ## Run it 
 
-Use the the following command to execute the example:
+First you should follow the instructions mentioned in examples folder of this git repo.
 
-    nextflow run patterns/process-per-file-chunk.nf
+After that you can use the the following command to execute the example:
+
+    nextflow kuberun patterns/process-per-file-chunk.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
 
