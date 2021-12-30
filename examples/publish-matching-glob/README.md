@@ -13,39 +13,43 @@ using the option `pattern` to store into each directory only the files that matc
 
 ## Code
 
-params.reads = 'reads/*_{1,2}.fq.gz'
-params.outdir = 'my-results'
+    params.reads = 'reads/*_{1,2}.fq.gz'
+    params.outdir = 'my-results'
 
-Channel
-    .fromFilePairs(params.reads, flat: true)
-    .set{ samples_ch }
+    Channel
+        .fromFilePairs(params.reads, flat: true)
+        .set{ samples_ch }
 
-process foo {
-  publishDir "$params.outdir/$sampleId/counts", pattern: "*_counts.txt"
-  publishDir "$params.outdir/$sampleId/outlooks", pattern: '*_outlook.txt'
-  publishDir "$params.outdir/$sampleId/", pattern: '*.fq'
+    process foo {
+      publishDir "$params.outdir/$sampleId/counts", pattern: "*_counts.txt"
+      publishDir "$params.outdir/$sampleId/outlooks", pattern: '*_outlook.txt'
+      publishDir "$params.outdir/$sampleId/", pattern: '*.fq'
 
-  input: 
-    set sampleId, file('sample1.fq.gz'), file('sample2.fq.gz') from samples_ch 
-  output: 
-    file "*"
-  script:
-  """
-    < sample1.fq.gz zcat > sample1.fq
-    < sample2.fq.gz zcat > sample2.fq
+      input: 
+        set sampleId, file('sample1.fq.gz'), file('sample2.fq.gz') from samples_ch 
+      output: 
+        file "*"
+      script:
+      """
+        < sample1.fq.gz zcat > sample1.fq
+        < sample2.fq.gz zcat > sample2.fq
 
-    awk '{s++}END{print s/4}' sample1.fq > sample1_counts.txt
-    awk '{s++}END{print s/4}' sample2.fq > sample2_counts.txt
+        awk '{s++}END{print s/4}' sample1.fq > sample1_counts.txt
+        awk '{s++}END{print s/4}' sample2.fq > sample2_counts.txt
 
-    head -n 50 sample1.fq > sample1_outlook.txt
-    head -n 50 sample2.fq > sample2_outlook.txt
-  """
-}
+        head -n 50 sample1.fq > sample1_outlook.txt
+        head -n 50 sample2.fq > sample2_outlook.txt
+      """
+    }
 
 
 ## Run it
 
-Run the script with the following command:
+First you should follow the instructions mentioned in examples folder of this git repo.
 
+After that you can use the the following command to execute the example:
 
-        nextflow run patterns/publish-matching-glob.nf
+    nextflow kuberun patterns/publish-matching-glob.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
