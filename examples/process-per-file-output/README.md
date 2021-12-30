@@ -14,31 +14,35 @@ Then use this channel as input for the downstream process.
 
 ## Code 
 
-process foo {
-  output:
-  file '*.txt' into foo_ch 
-  script:
-  '''
-  echo Hello there! > file1.txt
-  echo What a beautiful day > file2.txt
-  echo I wish you are having fun1 > file3.txt 
-  ''' 
-}
+    process foo {
+      output:
+      file '*.txt' into foo_ch 
+      script:
+      '''
+      echo Hello there! > file1.txt
+      echo What a beautiful day > file2.txt
+      echo I wish you are having fun1 > file3.txt 
+      ''' 
+    }
 
-process bar {
-  input: 
-  file x from foo_ch.flatten()
-  script:
-  """
-  cat $x
-  """
-}
+    process bar {
+      input: 
+      file x from foo_ch.flatten()
+      script:
+      """
+      cat $x
+      """
+    }
 
 
 ## Run it
 
-Use the the following command to execute the example:
+First you should follow the instructions mentioned in examples folder of this git repo.
 
+After that you can use the the following command to execute the example:
 
-        nextflow run patterns/process-per-file-output.nf
+    nextflow kuberun patterns/process-per-file-output.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
 
