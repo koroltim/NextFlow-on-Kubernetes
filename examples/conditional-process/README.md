@@ -16,54 +16,59 @@ for the third process.
 
 ## Code 
 
-params.flag = false 
+    params.flag = false 
 
-process foo {
-  output: 
-  file 'x.txt' into foo_ch
-  when:
-  !params.flag
+    process foo {
+      output: 
+      file 'x.txt' into foo_ch
+      when:
+      !params.flag
 
-  script:
-  '''
-  echo foo > x.txt
-  '''
-}
+      script:
+      '''
+      echo foo > x.txt
+      '''
+    }
 
-process bar {
-  output: 
-  file 'x.txt' into bar_ch
-  when:
-  params.flag
+    process bar {
+      output: 
+      file 'x.txt' into bar_ch
+      when:
+      params.flag
 
-  script:
-  '''
-  echo bar > x.txt
-  '''
-}
+      script:
+      '''
+      echo bar > x.txt
+      '''
+    }
 
-process omega {
-  echo true
-  input:
-  file x from foo_ch.mix(bar_ch)
-  
-  script:
-  """
-  cat $x 
-  """
-}
+    process omega {
+      echo true
+      input:
+      file x from foo_ch.mix(bar_ch)
+
+      script:
+      """
+      cat $x 
+      """
+    }
 
 
 ## Run it
 
-Use the the following command to execute the example:
+First you should follow the instructions mentioned in examples folder of this git repo.
 
-    nextflow run patterns/conditional-process.nf
+After that you can use the the following command to execute the example:
+
+    nextflow kuberun patterns/conditional-process.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
 
 The processes `foo` and `omega` are executed. Run the same command 
 with the `--flag` command line option. 
 
-    nextflow run patterns/conditional-process.nf --flag 
+    nextflow kuberun patterns/conditional-process.nf --flag -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt 
 
 This time the processes `bar` and `omega` are executed.
 
@@ -81,53 +86,58 @@ for the third process.
 
 ## Code 
 
-params.flag = false
+    params.flag = false
 
-(foo_inch, bar_inch) = ( params.flag
-                     ? [ Channel.empty(), Channel.from(1,2,3) ]
-                     : [ Channel.from(4,5,6), Channel.empty() ] )   
+    (foo_inch, bar_inch) = ( params.flag
+                         ? [ Channel.empty(), Channel.from(1,2,3) ]
+                         : [ Channel.from(4,5,6), Channel.empty() ] )   
 
-process foo {
+    process foo {
 
-  input:
-  val(f) from foo_inch
+      input:
+      val(f) from foo_inch
 
-  output:
-  file 'x.txt' into foo_ch
+      output:
+      file 'x.txt' into foo_ch
 
-  script:
-  """
-  echo $f > x.txt
-  """
-}
+      script:
+      """
+      echo $f > x.txt
+      """
+    }
 
-process bar {
-  input:
-  val(b) from bar_inch
+    process bar {
+      input:
+      val(b) from bar_inch
 
-  output:
-  file 'x.txt' into bar_ch
+      output:
+      file 'x.txt' into bar_ch
 
-  script:
-  """
-  echo $b > x.txt
-  """
-}
+      script:
+      """
+      echo $b > x.txt
+      """
+    }
 
-process omega {
-  echo true
-  input:
-  file x from foo_ch.mix(bar_ch)
+    process omega {
+      echo true
+      input:
+      file x from foo_ch.mix(bar_ch)
 
-  script:
-  """
-  cat $x
-  """
-}
+      script:
+      """
+      cat $x
+      """
+    }
 
 
 ## Run it 
 
+First you should follow the instructions mentioned in examples folder of this git repo.
 
-        nextflow run patterns/conditional-process2.nf
+After that you can use the the following command to execute the example:
 
+    nextflow kuberun patterns/conditional-process2.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
