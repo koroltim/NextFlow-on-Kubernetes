@@ -13,49 +13,59 @@ The matching files are emitted as tuples in which the first element is the group
 
 ## Code
 
-Channel
-    .fromFilePairs('reads/*_{1,2}.fq.gz')
-    .set { samples_ch }
+    Channel
+        .fromFilePairs('reads/*_{1,2}.fq.gz')
+        .set { samples_ch }
 
-process foo {
-  input:
-  set sampleId, file(reads) from samples_ch
+    process foo {
+      input:
+      set sampleId, file(reads) from samples_ch
 
-  script:
-  """
-  your_command --sample $sampleId --reads $reads
-  """
-}
+      script:
+      """
+      your_command --sample $sampleId --reads $reads
+      """
+    }
 
 
 ## Run it 
 
+First you should follow the instructions mentioned in examples folder of this git repo.
 
-        nextflow run patterns/process-per-file-pairs.nf
+After that you can use the the following command to execute the example:
 
+    nextflow kuberun patterns/process-per-file-pairs.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
 
 
 ## Custom grouping strategy
 
 When needed it is possible to define a custom grouping strategy. A common use case is for alignment BAM files (`sample1.bam`) that come along with their index file. The difficulty is that the index is sometimes called `sample1.bai` and sometimes `sample1.bam.bai` depending on the software used. The following example can accommodate both cases. 
 
-Channel
-    .fromFilePairs('alignment/*.{bam,bai}') { file -> file.name.replaceAll(/.bam|.bai$/,'') }
-    .set { samples_ch }
+    Channel
+        .fromFilePairs('alignment/*.{bam,bai}') { file -> file.name.replaceAll(/.bam|.bai$/,'') }
+        .set { samples_ch }
 
-process foo {
-  input:
-  set sampleId, file(bam) from samples_ch
+    process foo {
+      input:
+      set sampleId, file(bam) from samples_ch
 
-  script:
-  """
-  your_command --sample $sampleId --bam ${sampleId}.bam
-  """
-}
+      script:
+      """
+      your_command --sample $sampleId --bam ${sampleId}.bam
+      """
+    }
 
 
 ## Run it 
 
+First you should follow the instructions mentioned in examples folder of this git repo.
 
-        nextflow run patterns/process-per-file-pairs-custom.nf
+After that you can use the the following command to execute the example:
 
+    nextflow kuberun patterns/process-per-file-pairs-custom.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
