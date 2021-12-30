@@ -12,33 +12,36 @@ Then use the resulting channel as input input for the process.
 
 ## Code 
 
-Channel.fromPath('reads/*_1.fq.gz').set { samples_ch }
+    Channel.fromPath('reads/*_1.fq.gz').set { samples_ch }
 
-process foo {
-  input:
-  file x from samples_ch
-  output:
-  file 'file.fq' into unzipped_ch
-  script:
-  """
-  < $x zcat > file.fq
-  """
-}
+    process foo {
+      input:
+      file x from samples_ch
+      output:
+      file 'file.fq' into unzipped_ch
+      script:
+      """
+      < $x zcat > file.fq
+      """
+    }
 
-process bar {
-  echo true   
-  input:
-  file '*.fq' from unzipped_ch.collect()
-  """
-  cat *.fq
-  """
-}
+    process bar {
+      echo true   
+      input:
+      file '*.fq' from unzipped_ch.collect()
+      """
+      cat *.fq
+      """
+    }
 
 
 ## Run it
 
-Use the the following command to execute the example:
+First you should follow the instructions mentioned in examples folder of this git repo.
 
+After that you can use the the following command to execute the example:
 
-        nextflow run patterns/process-collect.nf
+    nextflow kuberun patterns/process-collect.nf -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
 
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
