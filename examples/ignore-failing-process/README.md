@@ -11,25 +11,30 @@ Use the process https://www.nextflow.io/docs/latest/process.html#errorstrategy[d
 
 ## Code 
 
-process foo {
-  errorStrategy 'ignore'
-  script:
-  '''
-    echo This is going to fail!
-    exit 1
-  '''
-}  
+    process foo {
+      errorStrategy 'ignore'
+      script:
+      '''
+        echo This is going to fail!
+        exit 1
+      '''
+    }  
 
-process bar {
-  script:
-  '''
-  echo OK
-  '''
-}
+    process bar {
+      script:
+      '''
+      echo OK
+      '''
+    }
 
 
 ## Run it 
 
-Run the script with the following command: 
+First you should follow the instructions mentioned in examples folder of this git repo.
 
-    nextflow run patterns/ignore-failing-process.nf 
+After that you can use the the following command to execute the example:
+
+    nextflow kuberun patterns/ignore-failing-process.nf  -pod-image 'cerit.io/nextflow:21.09.1' -v PVC:/mnt
+
+Where you should replace PVC with your actual PVC, you've created before.
+You can create your PVC by following this guideline https://cerit-sc.github.io/kube-docs/docs/pvc.html
